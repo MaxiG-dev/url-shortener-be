@@ -40,17 +40,27 @@ export class UsersService {
     return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string, user: User): Promise<User> {
+    if (id !== user._id) throw new BadRequestException(`You can't see other users`);
+    const userInDB = await this.userModel.findOne({ _id: id });
+    return userInDB;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto, user: User) {
+    if(id !== user._id) throw new BadRequestException(`You can't update other users`);
+    const userUpdate = await this.userModel.findByIdAndUpdate(id, {
+      ...updateUserDto,
+      updatedAt: new Date(),
+    });
+    return userUpdate;
   }
 
-  async remove(id: number) {
-    await this.userModel.deleteMany();
-    return `This action removes a #${id} user`;
+  async remove(id: string, user: User) {
+    if(id !== user._id) throw new BadRequestException(`You can't delete other users`);
+    const userDelete = await this.userModel.findByIdAndUpdate(id, {
+      deletedAt: new Date(),
+    });
+    return userDelete;
   }
 
   async login(loginUserDTO: LoginUserDTO) {
