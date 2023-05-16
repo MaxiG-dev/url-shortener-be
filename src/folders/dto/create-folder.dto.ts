@@ -8,5 +8,5 @@ export class CreateFolderDto {
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
-    urlIds: string[];
+    urlIds?: string[];
 }

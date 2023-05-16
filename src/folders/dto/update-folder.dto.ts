@@ -5,11 +5,11 @@ export class UpdateFolderDto {
     @IsString()
     @MinLength(3)
     @IsOptional()
-    title: string;
+    title?: string;
 
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
-    urlIds: string[];
+    urlIds?: string[];
 
 }

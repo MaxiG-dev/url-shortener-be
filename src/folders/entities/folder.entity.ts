@@ -11,5 +11,14 @@ export class Folder {
     @Prop({ unique: true, index: true })
     urlIds: string[];
 
+    @Prop()
+    createdAt: Date;
+  
+    @Prop()
+    updatedAt?: Date;
+  
+    @Prop()
+    deletedAt?: Date;
+
 }
 export const FolderSchema = SchemaFactory.createForClass(Folder);
