@@ -9,6 +9,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { UrlsModule } from './urls/urls.module';
+import { FoldersModule } from './folders/folders.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,11 +24,11 @@ import { UrlsModule } from './urls/urls.module';
         renderPath: '404',
       },
     ),
-    MongooseModule.forRoot(
-      'mongodb+srv://admin:manya601@cluster0.ssoxjyl.mongodb.net/?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(process.env.MONGODB_URL),
     UsersModule,
     UrlsModule,
+    FoldersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
