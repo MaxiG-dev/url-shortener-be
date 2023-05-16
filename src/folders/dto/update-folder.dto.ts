@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFolderDto } from './create-folder.dto';
+import { IsArray, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class UpdateFolderDto extends PartialType(CreateFolderDto) {}
+export class UpdateFolderDto {
+
+    @IsString()
+    @MinLength(3)
+    @IsOptional()
+    title: string;
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    urlIds: string[];
+
+}
