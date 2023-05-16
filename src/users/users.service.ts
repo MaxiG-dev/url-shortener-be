@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FolderDto } from './dto/folder.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { LoginUserDTO } from './dto/login-user.dto';
+import * as bcrypt from 'bcryptjs';
+import { DataBaseException } from 'src/common/filters/database.exception';
 
 @Injectable()
 export class UsersService {
@@ -28,8 +31,8 @@ export class UsersService {
       isPremium: true,
       ...createUserDto,
     };
-    await this.userModel.create(user);
-    return user;
+    const userSaved = await this.userModel.create(user);
+    return userSaved;
   }
 
   async findAll() {
@@ -48,5 +51,19 @@ export class UsersService {
   async remove(id: number) {
     await this.userModel.deleteMany();
     return `This action removes a #${id} user`;
+  }
+
+  async login(loginUserDTO: LoginUserDTO) {
+    const { email, password } = loginUserDTO;
+
+    const user = await this.userModel.findOne({
+      where: { email, deletedAt: null },
+    });
+    if (!user) throw new DataBaseException(`User with email ${email} not found`, 404);
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid)throw new BadRequestException(`Password is not valid`);
+
+    return user;
   }
 }
