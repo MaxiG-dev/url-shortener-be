@@ -1,4 +1,4 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class Folder {
@@ -12,3 +12,4 @@ export class Folder {
     urlIds: string[];
 
 }
+export const FolderSchema = SchemaFactory.createForClass(Folder);
