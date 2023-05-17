@@ -3,6 +3,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginUserDTO } from '../users/dto/login-user.dto';
 import { UsersService } from '../users/users.service';
 import { JWTPayload } from './interfaces/jwt-payload.interface';
+import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
 
@@ -15,30 +16,23 @@ export class AuthService {
   ) {}
 
   async registerUser(createUserDTO: CreateUserDto) {
-    const responseDto = await this.usersService.create(createUserDTO);
-    const { password, ...rest } = responseDto;
-    return {
-      ...rest,
-      token: this.getJWTToken({
-        id: rest._id,
-        email: rest.email,
-        folders: rest.foldersIds,
-        roles: rest.roles,
-      }),
-    }
+    const user = await this.usersService.create(createUserDTO);
+    return this.getResponseObject(user);
   }
 
   async loginUser(loginUserDTO: LoginUserDTO) {
-    const loginUser = await this.usersService.login(loginUserDTO);
-    const { password, ...rest } = loginUser;
+    const user = await this.usersService.login(loginUserDTO);
+    return this.getResponseObject(user);
+  }
 
+  private getResponseObject(user: User) {
     return {
-      ...rest,
+      ...user,
       token: this.getJWTToken({
-        id: rest._id,
-        email: rest.email,
-        folders: rest.foldersIds,
-        roles: rest.roles,
+        id: user._id,
+        email: user.email,
+        folders: user.foldersIds,
+        roles: user.roles,
       }),
     }
   }

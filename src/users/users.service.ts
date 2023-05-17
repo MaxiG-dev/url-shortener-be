@@ -16,11 +16,11 @@ export class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
 
     const { folders = [], ...rest } = createUserDto;
 
-    const userSaved = await this.userModel.create({
+    const response = await this.userModel.create({
       ...rest,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -30,11 +30,12 @@ export class UsersService {
       roles: [ValidRoles.user],
       password: await bcrypt.hash(rest.password, 10),
     });
-    return userSaved;
+
+    return response.toJSON() as User;
   }
 
   async findAll() {
-    const users = await this.userModel.find();
+    const users = await this.userModel.find({ deletedAt: null });
     return users;
   }
 
@@ -64,14 +65,12 @@ export class UsersService {
   async login(loginUserDTO: LoginUserDTO) {
     const { email, password } = loginUserDTO;
 
-    const user = await this.userModel.findOne({
-      where: { email, deletedAt: null },
-    });
-    if (!user) throw new DataBaseException(`User with email ${email} not found`, 404);
+    const response = await this.userModel.findOne({ email , deletedAt: null });
+    if (!response) throw new DataBaseException(`User with email ${email} not found`, 404);
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid)throw new BadRequestException(`Password is not valid`);
+    const isPasswordValid = await bcrypt.compare(password, response.password);
+    if (!isPasswordValid) throw new BadRequestException(`Password is not valid`);
 
-    return user;
+    return response.toJSON() as User;
   }
 }
