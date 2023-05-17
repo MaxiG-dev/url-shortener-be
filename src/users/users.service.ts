@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { LoginUserDTO } from './dto/login-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { DataBaseException } from 'src/common/filters/database.exception';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
 
 @Injectable()
 export class UsersService {
@@ -16,22 +17,19 @@ export class UsersService {
     private readonly userModel: Model<User>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const defaultFolder: FolderDto = {
-      title: 'My URLs',
-      urls: [],
-      isDefault: true,
-      isDeleted: false,
-    };
 
-    const user: CreateUserDto = {
-      createDate: new Date(),
-      role: 'user',
-      folders: [defaultFolder],
-      isDeleted: false,
-      isPremium: true,
-      ...createUserDto,
-    };
-    const userSaved = await this.userModel.create(user);
+    const { folders = [], ...rest } = createUserDto;
+
+    const userSaved = await this.userModel.create({
+      ...rest,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      foldersIds: folders,
+      isPremium: false,
+      roles: [ValidRoles.user],
+      password: await bcrypt.hash(rest.password, 10),
+    });
     return userSaved;
   }
 

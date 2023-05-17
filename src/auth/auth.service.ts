@@ -20,7 +20,7 @@ export class AuthService {
     return {
       ...rest,
       token: this.getJWTToken({
-        id: rest.id,
+        id: rest._id,
         email: rest.email,
         folders: rest.foldersIds,
         roles: rest.roles,
@@ -35,7 +35,7 @@ export class AuthService {
     return {
       ...rest,
       token: this.getJWTToken({
-        id: rest.id,
+        id: rest._id,
         email: rest.email,
         folders: rest.foldersIds,
         roles: rest.roles,

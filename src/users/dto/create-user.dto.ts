@@ -4,6 +4,7 @@ import {
   IsString,
   IsStrongPassword,
   IsIn,
+  IsArray,
 } from 'class-validator';
 import { FolderDto } from './folder.dto';
 
@@ -18,19 +19,8 @@ export class CreateUserDto {
   @IsString()
   email: string;
 
-  @IsString()
-  @IsIn(['admin', 'mod', 'user', 'guest'])
-  role: string;
-
-  createDate: Date;
-
-  lastLogin?: Date;
-
-  folders: FolderDto[];
-
-  @IsBoolean()
+  @IsArray()
   @IsOptional()
-  isDeleted: boolean;
+  folders?: FolderDto[];
 
-  isPremium: boolean;
 }
